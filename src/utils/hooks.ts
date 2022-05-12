@@ -3,10 +3,10 @@ import { isFunction } from './utils';
 
 const useSetState = <T extends object>(
   initialState: T = {} as T,
-): [T, (patch: Partial<T> | ((prevState: T) => Partial<T>)) => void] => {
+  ): [T, (patch: Partial<T> | ((prevState: T) => Partial<T>)) => void] => {
   const [state, setState] = useState<T>(initialState);
 
-  const setMergeState = useCallback((patch) => {
+  const setMergeState = useCallback((patch: Partial<T> | ((prevState: T) => Partial<T>)) => {
     setState((prevState) => ({
       ...prevState,
       ...(isFunction(patch) ? patch(prevState) : patch),

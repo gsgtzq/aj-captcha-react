@@ -1,3 +1,5 @@
+import React from 'react';
+import { CheckPictureRequest, CommonResp, GetPictureRequest, GetPictureResponse } from '../schema';
 import type { BaseTypeProps } from '../utils';
 
 export type CaptchaType = 'auto' | 'slide' | 'point';
@@ -10,11 +12,21 @@ export interface CaptchaModel {
   block?: string;
 }
 
+export interface SuccessInfo {
+  captchaVerification: string
+}
+
 export interface CaptchaProps extends BaseTypeProps {
+  
   /**
-   * 后台路径前缀
+   * 获取验证码
    */
-  path: string;
+  onGetCaptcha: (req: GetPictureRequest) => Promise<CommonResp<GetPictureResponse>>;
+
+  /**
+   * 校验验证码
+   */
+  onVerify: (req: CheckPictureRequest) => Promise<CommonResp<boolean>>;
 
   /**
    * 验证码类型
@@ -33,9 +45,13 @@ export interface CaptchaProps extends BaseTypeProps {
   /**
    * 校验成功
    */
-  onSuccess: (data: any) => void;
+  onSuccess: (data: SuccessInfo) => void;
   /**
    * 引用声明
    */
   ref?: any;
+  /**
+   * 子组件
+   */
+  children?: React.ReactNode
 }

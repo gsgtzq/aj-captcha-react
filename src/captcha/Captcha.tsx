@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import type { CaptchaModel, CaptchaProps, CaptchaType } from './PropsType';
-import { aesEncrypt, Anchor, check, CODE, createNamespace, noop, picture, storage } from '../utils';
+import type { CaptchaModel, CaptchaProps, CaptchaType, SuccessInfo } from './PropsType';
+import { aesEncrypt, Anchor, CODE, createNamespace, noop, storage } from '../utils';
 import './style/index.less';
 import Popup from '../popup';
 import Loading from '../loading';
@@ -14,7 +14,7 @@ import Icon from '../icon';
 const [bem] = createNamespace('captcha');
 
 const Captcha: FC<CaptchaProps> = forwardRef((props, ref) => {
-  const { type = 'auto', onCancel = noop, onSuccess, onFail = noop, path, className, style } = props;
+  const { type = 'auto', onCancel = noop, onSuccess, onFail = noop, onGetCaptcha, onVerify, className, style } = props;
   const [visible, toggle] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [captcha, setCaptcha] = useState<CaptchaModel>({});
@@ -28,11 +28,11 @@ const Captcha: FC<CaptchaProps> = forwardRef((props, ref) => {
   const fetch = async () => {
     toggle(true);
     const vr = Anchor[captchaType];
-    const { repCode, repData } = await picture(path, {
+    const { repCode, repData } = await onGetCaptcha({
       captchaType: vr.captchaType,
-      clientUid: localStorage.getItem(vr.name),
+      clientUid: localStorage.getItem(vr.name) ?? "",
       ts: Date.now(),
-    });
+    })
     const msg = CODE[repCode] || '请刷新页面再试';
     if (repCode === '0000') {
       setError('')
@@ -59,7 +59,7 @@ const Captcha: FC<CaptchaProps> = forwardRef((props, ref) => {
       setState({ count: c });
     }
   };
-  const success = (data: any) => {
+  const success = (data: SuccessInfo) => {
     setTimeout(() => {
       onSuccess(data);
       toggle(false);
@@ -67,7 +67,7 @@ const Captcha: FC<CaptchaProps> = forwardRef((props, ref) => {
     }, 1000);
   };
 
-  const valid = (param: string, second: any) => {
+  const valid = (param: string, second: SuccessInfo) => {
     return new Promise<boolean>((resolve) => {
       const vr = Anchor[captchaType];
       const data = {
@@ -75,21 +75,19 @@ const Captcha: FC<CaptchaProps> = forwardRef((props, ref) => {
         pointJson: captcha.secretKey
           ? aesEncrypt(param, captcha.secretKey)
           : param,
-        token: captcha.token,
-        clientUid: localStorage.getItem(vr.name),
+        token: captcha.token ?? "",
+        clientUid: localStorage.getItem(vr.name) ?? "",
         ts: Date.now(),
       };
-      check(path, data)
-        .then((res) => {
-          const validate: boolean = res.repCode === '0000';
-          if (validate) {
-            success(second);
-          } else {
-            fail();
-          }
-          resolve(validate);
-        })
-        .catch(() => resolve(false));
+      onVerify(data).then(res => {
+        const validate: boolean = res.repCode === '0000';
+        if (validate) {
+          success(second);
+        } else {
+          fail();
+        }
+        resolve(validate);
+      }).catch(() => resolve(false));
     });
   };
 
