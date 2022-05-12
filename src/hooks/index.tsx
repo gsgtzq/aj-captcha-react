@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef } from "react";
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import Captcha from "../captcha";
 import type { CaptchaType, SuccessInfo } from "../captcha/PropsType";
 import {
@@ -38,10 +38,7 @@ export function useCaptcha(option: CaptchaOption) {
   useLayoutEffect(() => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    const root = ReactDOM.createRoot(
-      document.getElementById('root') as HTMLElement
-    );
-    root.render(
+    ReactDOM.render(
       <Captcha
         onGetCaptcha={option.onGetCaptcha}
         onVerify={option.onVerify}
@@ -50,6 +47,7 @@ export function useCaptcha(option: CaptchaOption) {
         onSuccess={onSuccess}
         ref={ref}
       />,
+      div
     );
   }, []);
 

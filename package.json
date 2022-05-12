@@ -1,6 +1,6 @@
 {
   "name": "@gsgtzq/aj-captcha-react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./dist/index.es.js",
   "types": "./types/index.d.ts",
   "license": "MIT",
