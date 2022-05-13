@@ -14,6 +14,7 @@ export interface CaptchaModel {
 
 export interface SuccessInfo {
   captchaVerification: string
+  token: string
 }
 
 export interface CaptchaProps extends BaseTypeProps {

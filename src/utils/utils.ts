@@ -2,6 +2,7 @@ import Utf8 from 'crypto-js/enc-utf8';
 import AES from 'crypto-js/aes';
 import ECB from 'crypto-js/mode-ecb';
 import Pkcs7 from 'crypto-js/pad-pkcs7';
+import { CaptchaModel, SuccessInfo } from '../captcha/PropsType';
 
 export const CODE: Record<any, string> = {
   '0000': '',
@@ -89,9 +90,9 @@ export const Anchor = {
  * 加密滑动验证二次校验参数
  * @param preview
  * @param moveLeftDistance
- * @returns {{captchaVerification: string}}
+ * @returns {SuccessInfo}
  */
-export function slideSecond(preview: any, moveLeftDistance: number) {
+export function slideSecond(preview: CaptchaModel, moveLeftDistance: number): SuccessInfo {
   let captchaVerification = `${preview.token}---${JSON.stringify({
     x: moveLeftDistance,
     y: 5.0,
@@ -99,21 +100,21 @@ export function slideSecond(preview: any, moveLeftDistance: number) {
   if (preview.secretKey) {
     captchaVerification = aesEncrypt(captchaVerification, preview.secretKey);
   }
-  return { captchaVerification };
+  return { captchaVerification, token: preview.token ?? '' };
 }
 
 /**
  * 加密点选验证二次校验参数
  * @param preview
  * @param checkPosArr
- * @returns {{captchaVerification: string}}
+ * @returns {SuccessInfo}
  */
-export function pointSecond(preview: any, checkPosArr: any) {
+export function pointSecond(preview: CaptchaModel, checkPosArr: any): SuccessInfo {
   let captchaVerification = `${preview.token}---${JSON.stringify(checkPosArr)}`;
   if (preview.secretKey) {
     captchaVerification = aesEncrypt(captchaVerification, preview.secretKey);
   }
-  return { captchaVerification };
+  return { captchaVerification, token: preview.token ?? '' };
 }
 
 export function noop() {}
