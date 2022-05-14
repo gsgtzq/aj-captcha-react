@@ -1,4 +1,5 @@
 {
+  "private": false,
   "name": "@gsgtzq/aj-captcha-react",
   "version": "0.0.7",
   "main": "./dist/index.es.js",
@@ -25,5 +26,8 @@
     "typescript": "^4.6.3",
     "vite": "^2.9.9"
   },
-  "repository": "git://github.com/gsgtzq/aj-captcha-react.git"
+  "repository": "git://github.com/gsgtzq/aj-captcha-react.git",
+  "publishConfig": {
+    "access": "public"
+  }
 }
